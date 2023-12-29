@@ -16,6 +16,8 @@ import {
 } from "@ant-design/icons";
 
 import { useGetCryptoDetailsQuery } from "../services/cryptoApi";
+import { useGetCryptoHistoryQuery } from "../services/cryptoApi";
+import LineChart from "./LineChart";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -24,6 +26,10 @@ const CryptoDetails = () => {
   const { coinId } = useParams();
   const [timePeriod, setTimePeriod] = useState("7d");
   const { data, isFetching } = useGetCryptoDetailsQuery(coinId);
+  const { data: coinHistory } = useGetCryptoHistoryQuery({
+    coinId,
+    timePeriod,
+  });
 
   const cryptoDetails = data?.data?.coin;
 
@@ -95,6 +101,8 @@ const CryptoDetails = () => {
     },
   ];
 
+  if (isFetching) return "Loading...";
+
   return (
     <Col className="coin-detail-container">
       <Col className="coin-heading-container">
@@ -116,7 +124,11 @@ const CryptoDetails = () => {
           <Option key={date}>{date}</Option>
         ))}
       </Select>
-      {/* <LineChart coinHistory={coinHistory} currentPrice={millify(cryptoDetails?.price)} coinName={cryptoDetails?.name} /> */}
+      <LineChart
+        coinHistory={coinHistory}
+        currentPrice={millify(cryptoDetails?.price)}
+        coinName={cryptoDetails?.name}
+      />
       <Col className="stats-container">
         <Col className="coin-value-statistics">
           <Col className="coin-value-statistics-heading">
